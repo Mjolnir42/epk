@@ -148,7 +148,7 @@ func (e *EncryptedPrivateKey) unlock(passphrase string) ([]byte, error) {
 }
 
 // signMsg uses the private key to sign message. It returns the signature.
-func (e *EncryptedPrivateKey) signMsg(private, message []byte) []byte {
+func (*EncryptedPrivateKey) signMsg(private, message []byte) []byte {
 
 	return ed25519.Sign(private, message)
 }
