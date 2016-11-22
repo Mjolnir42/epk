@@ -60,13 +60,12 @@ func New(passphrase string) (*EncryptedPrivateKey, ed25519.PublicKey, error) {
 // Sign signs the message with the private key protected by passphrase
 // and returns the signature.
 func (e *EncryptedPrivateKey) Sign(passphrase string, message []byte) ([]byte, error) {
-	// compute the key to unlock the private key
-	key, err := e.derive([]byte(passphrase))
+	pk, err := e.unlock(passphrase)
 	if err != nil {
 		return nil, err
 	}
 
-	return e.signMsg(key, message)
+	return e.signMsg(pk, message), nil
 }
 
 // set saves the private key after encryption with the passphrase
@@ -118,24 +117,29 @@ func (e *EncryptedPrivateKey) newSalt() error {
 	return err
 }
 
-// signMsg unlocks the private key and signs message with it. It
-// returns the signature.
-func (e *EncryptedPrivateKey) signMsg(key, message []byte) ([]byte, error) {
-	var err error
-	var pk, sig []byte
-	var crypt cipher.AEAD
-
-	if crypt, err = chacha20poly1305.New(key); err != nil {
+// unlock decrypts and returns the private key
+func (e *EncryptedPrivateKey) unlock(passphrase string) ([]byte, error) {
+	key, err := e.derive([]byte(passphrase))
+	if err != nil {
 		return nil, err
 	}
 
-	if pk, err = crypt.Open([]byte{}, e.Salt[:12],
-		e.privateKey, []byte{}); err != nil {
+	crypt, err := chacha20poly1305.New(key)
+	if err != nil {
 		return nil, err
 	}
 
-	sig = ed25519.Sign(pk, message)
-	return sig, nil
+	pk, err := crypt.Open([]byte{}, e.Salt[:12], e.privateKey, []byte{})
+	if err != nil {
+		return nil, err
+	}
+	return pk, nil
+}
+
+// signMsg uses the private key to sign message. It returns the signature.
+func (e *EncryptedPrivateKey) signMsg(private, message []byte) []byte {
+
+	return ed25519.Sign(private, message)
 }
 
 // vim: ts=4 sw=4 sts=4 noet fenc=utf-8 ffs=unix
