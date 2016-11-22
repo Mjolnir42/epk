@@ -41,7 +41,7 @@ type EncryptedPrivateKey struct {
 	privateKey []byte
 }
 
-// New returns the public and encrypted private key for
+// New returns the plain public and encrypted private key for
 // a generated keypair.
 func New(passphrase string) (*EncryptedPrivateKey, ed25519.PublicKey, error) {
 	var err error

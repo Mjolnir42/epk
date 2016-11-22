@@ -5,7 +5,7 @@
  * that can be found in the LICENSE file.
  */
 
-package epk
+package epk // import "github.com/mjolnir42/epk"
 
 import (
 	"bytes"
