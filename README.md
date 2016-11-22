@@ -27,7 +27,7 @@ func ReadFrom(r io.Reader) (*EncryptedPrivateKey, error)
     Additional lines are ignored.
 
     ReadFrom returns io.ErrUnexpectedEOF if no data line could be found as well
-    as any error that occured.
+    as any error that occurred.
 
 
 func (e *EncryptedPrivateKey) Armor() (string, error)
