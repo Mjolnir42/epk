@@ -80,6 +80,9 @@ func (e *EncryptedPrivateKey) set(passphrase, private []byte) error {
 	if err != nil {
 		return err
 	}
+	// set this here since derive is actually reused to unlock
+	e.KDF = `scrypt`
+	e.KDFParam = `N=65536;r=8;p=1`
 
 	if err = e.encrypt(key, private); err != nil {
 		return err
@@ -104,13 +107,6 @@ func (e *EncryptedPrivateKey) encrypt(key, data []byte) error {
 
 // derive uses scrypt to generate a key from a passphrase
 func (e *EncryptedPrivateKey) derive(passphrase []byte) ([]byte, error) {
-	if e.KDF == `` {
-		e.KDF = `scrypt`
-	}
-	if e.KDFParam == `` {
-		e.KDFParam = `N=65536;r=8;p=1`
-	}
-
 	return scrypt.Key(passphrase, e.Salt, 65536, 8, 1, 32)
 }
 
