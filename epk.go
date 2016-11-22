@@ -68,6 +68,17 @@ func (e *EncryptedPrivateKey) Sign(passphrase string, message []byte) ([]byte, e
 	return e.signMsg(pk, message), nil
 }
 
+// Public unlocks the private key and generates the public key from it
+func (e *EncryptedPrivateKey) Public(passphrase string) (ed25519.PublicKey, error) {
+	pk, err := e.unlock(passphrase)
+	if err != nil {
+		return nil, err
+	}
+
+	pub := ed25519.PrivateKey(pk).Public()
+	return pub.(ed25519.PublicKey), nil
+}
+
 // set saves the private key after encryption with the passphrase
 // as e.privatekey
 func (e *EncryptedPrivateKey) set(passphrase, private []byte) error {

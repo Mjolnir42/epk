@@ -43,4 +43,8 @@ func (e *EncryptedPrivateKey) Armor() (string, error)
 func (e *EncryptedPrivateKey) Sign(passphrase string, message []byte) ([]byte, error)
     Sign signs the message with the private key protected by passphrase and
     returns the signature.
+
+
+func (e *EncryptedPrivateKey) Public(passphrase string) (ed25519.PublicKey, error)
+    Public unlocks the private key and generates the public key from it
 ```
