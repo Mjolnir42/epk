@@ -12,6 +12,7 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/gob"
+	"fmt"
 	"io"
 	"strings"
 	"unicode"
@@ -84,6 +85,28 @@ func ReadFrom(r io.Reader) (*EncryptedPrivateKey, error) {
 		return nil, err
 	}
 	return encPK, nil
+}
+
+// Store writes out the encrypted private key to w in a format suitable
+// for import by ReadFrom.
+func (e *EncryptedPrivateKey) Store(w io.Writer) error {
+	var err error
+	var export string
+
+	// write out a comment line indicating what this hunk of base64
+	// actually is
+	if _, err = fmt.Fprintln(w,
+		`# encrypted Ed25519 private key, github.com/mjolnir42/epk`,
+	); err != nil {
+		return err
+	}
+
+	if export, err = e.Armor(); err != nil {
+		return err
+	}
+
+	_, err = fmt.Fprintln(w, export)
+	return err
 }
 
 // vim: ts=4 sw=4 sts=4 noet fenc=utf-8 ffs=unix

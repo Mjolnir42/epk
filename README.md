@@ -30,6 +30,11 @@ func ReadFrom(r io.Reader) (*EncryptedPrivateKey, error)
     as any error that occurred.
 
 
+func (e *EncryptedPrivateKey) Store(w io.Writer) error
+    Store writes out the encrypted private key to w in a format suitable for
+    import by ReadFrom.
+
+
 func (e *EncryptedPrivateKey) Armor() (string, error)
     Armor returns the ascii armored binary serialization of e. The ASCII armor
     is encoded using standard base64.
